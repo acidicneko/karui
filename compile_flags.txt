@@ -1,0 +1,2 @@
+-Isrc/include
+-std=c++20
