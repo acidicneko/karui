@@ -2,7 +2,7 @@ CC = g++
 CFILES = $(shell find src/ -type f -name '*.cpp')
 OFILES = $(CFILES:.cpp=.o)
 
-TARGET = build/zeta
+TARGET = build/scbuild
 
 .PHONY = clean all
 
