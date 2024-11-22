@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <utils.hpp>
 #include <vector>
+#include <algorithm>
 
 int utils::ExecuteCommand(std::string command) {
   int argumentCount = std::count(command.begin(), command.end(), ' ') + 1;
