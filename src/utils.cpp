@@ -1,10 +1,10 @@
+#include <algorithm>
 #include <cstring>
 #include <sstream>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <utils.hpp>
 #include <vector>
-#include <algorithm>
 
 int utils::ExecuteCommand(std::string command) {
   int argumentCount = std::count(command.begin(), command.end(), ' ') + 1;
@@ -48,4 +48,8 @@ std::string utils::GetFilenameWithoutExtension(std::string FullFilePath) {
   }
   std::string FilenameWithExtension = (--Splits.end())->data();
   return utils::GetExtensionTypeAndFilename(FilenameWithExtension)[0];
+}
+
+bool utils::FileExists(std::string Filename) {
+  return access(Filename.c_str(), F_OK) != -1;
 }

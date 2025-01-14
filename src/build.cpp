@@ -1,5 +1,8 @@
+#include "encoder.hpp"
+#include "meta.hpp"
 #include <build.hpp>
 #include <compiler.hpp>
+#include <dependency.hpp>
 #include <dirent.h>
 #include <iostream>
 #include <string>
@@ -43,12 +46,16 @@ int build::Build() {
   bool CompiledSuccessfully = true;
   for (auto file = SourceFiles.begin(); file != SourceFiles.end(); file++) {
     std::string SrcFileLocation = file->data();
-    if (Compiler->Compile(SrcFileLocation) != 0) {
-      CompiledSuccessfully = false;
-      std::cout << "\033[1;31mERROR\033[0m: Failed to compile: " << file->data()
-                << std::endl;
-      continue;
+    if (!dependency::CheckModified(SrcFileLocation)) {
+      dependency::UpdateMeta(SrcFileLocation);
+      if (Compiler->Compile(SrcFileLocation) != 0) {
+        CompiledSuccessfully = false;
+        std::cout << "\033[1;31mERROR\033[0m: Failed to compile: "
+                  << file->data() << std::endl;
+        continue;
+      }
     }
+
     std::string ObjFileLocation = SrcFileLocation.replace(0, 3, "build");
     ObjectFiles.push_back(
         SrcFileLocation.replace(ObjFileLocation.find(".", 0, 1) + 1, 3, "o"));
