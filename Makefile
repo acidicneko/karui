@@ -1,6 +1,9 @@
 CC = g++
-CFILES = $(shell find src/ -type f -name '*.cpp')
-OFILES = $(CFILES:.cpp=.o)
+CPPFILES = $(shell find src/ -type f -name '*.cpp')
+CFILES = $(shell find src/ -type f -name '*.c')
+
+OFILES = $(CFILES:.c=.o)
+OFILES += $(CPPFILES:.cpp=.o)
 
 TARGET = build/scbuild
 
@@ -13,6 +16,10 @@ $(TARGET): $(OFILES)
 %.o: %.cpp
 	@echo [CC] $@
 	@$(CC) -I src/include/ -std=c++20 -c $< -o $@
+
+%.o: %.c
+	@echo [CC] $@
+	@gcc -I src/include/ -c $< -o $@
 
 clean:
 	@echo [CLEAN]

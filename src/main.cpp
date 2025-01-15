@@ -1,8 +1,11 @@
+#include "meta.hpp"
 #include <build.hpp>
 #include <getopt.h>
 #include <iostream>
 
 int main(int argc, char **argv) {
+  scbuild::builder *Builder = new class scbuild::builder();
+  Builder->ParserConfig(DEFAULT_CONFIG_FILE);
   option longopts[] = {{"build", no_argument, NULL, 'b'},
                        {"clean", no_argument, NULL, 'c'},
                        {"help", no_argument, NULL, 'h'},
@@ -17,7 +20,7 @@ int main(int argc, char **argv) {
 
     switch (opt) {
     case 'b':
-      build::Build();
+      build::Build(Builder);
       break;
     case 'c':
       break;

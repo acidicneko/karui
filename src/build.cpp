@@ -6,6 +6,7 @@
 #include <meta.hpp>
 #include <mutex>
 #include <queue>
+#include <scbuild.hpp>
 #include <string>
 #include <thread>
 #include <utils.hpp>
@@ -33,14 +34,13 @@ std::vector<std::string> build::CollectSourceFiles(std::string ParentDirectory,
   return SourceFiles;
 }
 
-int build::Build() {
+int build::Build(scbuild::builder *Builder) {
   compiler::Compiler *Compiler = new class compiler::Compiler();
 
-  Compiler->CompilerName = "g++";
-  Compiler->CompilerOptions.push_back("-Isrc/include");
-  Compiler->CompilerOptions.push_back("-std=c++20");
-  Compiler->BuildFolder = "build";
-  Compiler->Target = "scbuild";
+  Compiler->CompilerName = Builder->compiler;
+  Compiler->CompilerOptions = Builder->compilerOptions;
+  Compiler->BuildFolder = Builder->buildFolder;
+  Compiler->Target = Builder->target;
 
   std::vector<std::string> SourceFiles = CollectSourceFiles("src", 1);
   std::vector<std::string> ObjectFiles;

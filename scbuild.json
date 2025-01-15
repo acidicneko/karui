@@ -1,0 +1,10 @@
+{
+  "cc": "g++",
+  "target": "scbuild",
+  "threads": 12,
+  "flags": [
+    "-Isrc/include",
+    "-std=c++17"
+  ],
+  "buildDir": "build"
+}

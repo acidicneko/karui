@@ -2,6 +2,7 @@
 
 #define VERSION "1.0.0"
 #define DEFAULT_THREAD_COUNT 4
+#define DEFAULT_CONFIG_FILE "scbuild.json"
 
 #include <stddef.h>
 #include <thread>
