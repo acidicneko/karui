@@ -3,6 +3,7 @@
 #include <dependency.hpp>
 #include <dirent.h>
 #include <iostream>
+#include <meta.hpp>
 #include <string>
 #include <utils.hpp>
 #include <vector>
@@ -40,12 +41,11 @@ int build::Build() {
 
   std::vector<std::string> SourceFiles = CollectSourceFiles("src", 1);
   std::vector<std::string> ObjectFiles;
-
   bool CompiledSuccessfully = true;
   for (auto file = SourceFiles.begin(); file != SourceFiles.end(); file++) {
     std::string SrcFileLocation = file->data();
-    if (!dependency::CheckModified(SrcFileLocation)) {
-      dependency::UpdateMeta(SrcFileLocation);
+
+    if (dependency::CheckModified(SrcFileLocation)) {
       if (Compiler->Compile(SrcFileLocation) != 0) {
         CompiledSuccessfully = false;
         std::cout << "\033[1;31mERROR\033[0m: Failed to compile: "
@@ -53,8 +53,8 @@ int build::Build() {
         continue;
       }
     }
-
     std::string ObjFileLocation = SrcFileLocation.replace(0, 3, "build");
+
     ObjectFiles.push_back(
         SrcFileLocation.replace(ObjFileLocation.find(".", 0, 1) + 1, 3, "o"));
   }

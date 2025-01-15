@@ -1,7 +1,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <dependency.hpp>
-#include <encoder.hpp>
 #include <meta.hpp>
 #include <sys/stat.h>
 #include <time.h>
@@ -9,29 +8,23 @@
 
 unsigned long getEpochModifiedTime(std::string Filename) {
   struct stat *FileStat = (struct stat *)malloc(sizeof(struct stat));
-  stat(Filename.c_str(), FileStat);
+  if (stat(Filename.c_str(), FileStat) != 0) {
+    return 0;
+  }
   time_t CurrentModified = FileStat->st_mtime;
   free(FileStat);
   return (unsigned long)CurrentModified;
 }
 
 bool dependency::CheckModified(std::string Filename) {
-  if (!utils::FileExists(DEFAULT_META_FILE)) {
-    return false; // if file doesn't exist, it's not modified
-  }
-  if (!find(DEFAULT_META_FILE, Filename)) {
-    return false;
-  }
-  unsigned long CurrentModified = getEpochModifiedTime(Filename);
-  unsigned long LastModified =
-      std::atoi(get_value(DEFAULT_META_FILE, Filename).c_str());
-  if (CurrentModified > LastModified) {
+  std::string SrcFileLocation = Filename;
+  Filename.replace(0, 3, "build");
+  Filename.replace(Filename.find(".", 0, 1) + 1, 3, "o");
+  std::string ObjFileLocation = Filename;
+  unsigned long SrcModified = getEpochModifiedTime(SrcFileLocation);
+  unsigned long ObjModified = getEpochModifiedTime(ObjFileLocation);
+  if (SrcModified > ObjModified) {
     return true;
   }
   return false;
-}
-
-void dependency::UpdateMeta(std::string Filename) {
-  unsigned long CurrentModified = getEpochModifiedTime(Filename);
-  create(DEFAULT_META_FILE, Filename, std::to_string(CurrentModified));
 }

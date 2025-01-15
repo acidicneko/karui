@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstring>
+#include <fstream>
 #include <sstream>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -51,5 +52,9 @@ std::string utils::GetFilenameWithoutExtension(std::string FullFilePath) {
 }
 
 bool utils::FileExists(std::string Filename) {
-  return access(Filename.c_str(), F_OK) != -1;
+  std::ifstream File(Filename);
+  if (!File) {
+    return false;
+  }
+  return true;
 }
