@@ -1,7 +1,9 @@
 # Simple C Build (scbuild) Tool
-Almost all languages have some dedicated build tools, but C/C++ doesn't. There are tools like CMake, Ninja, make etc. but they are not as simple as they should be. This tool is a simple build tool for C/C++ projects.
+There are tools like CMake, Ninja, make etc. but they are not as simple, but complex in nature for a relatively simpler project.
 
-scbuild aims to be easy to use and fast. Note that it is not a replacement for CMake or Ninja, but a simple build tool for small projects.
+scbuild aims to be easy to use and fast. Note that it is not a replacement for CMake or Ninja, but just a simple build tool for small projects.
+It supports both C and C++.
+
 
 > [!CAUTION]
 > This tool is still in development and is not meant to be used in production.
