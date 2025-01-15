@@ -40,7 +40,7 @@ int build::Build() {
   Compiler->CompilerOptions.push_back("-Isrc/include");
   Compiler->CompilerOptions.push_back("-std=c++20");
   Compiler->BuildFolder = "build";
-  Compiler->Target = "zeta";
+  Compiler->Target = "scbuild";
 
   std::vector<std::string> SourceFiles = CollectSourceFiles("src", 1);
   std::vector<std::string> ObjectFiles;
