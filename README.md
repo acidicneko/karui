@@ -14,8 +14,19 @@ It supports both C and C++.
 - fast
 - Recompile only on changes
 
+## Install instructions
+Clone the repository
+
+```
+git clone https://github.com/acidicneko/karui.git
+```
+
+Run the provided `configure.sh` to compile karui. The resultant binary is placed in `build/` folder, which can
+be used to compile karui itself with given `scbuild.json` file in project root.
+
+
 ## Future plans
-- Add a configuring the tool via a config file
+- Configuring the tool via a config file
 - File exclusions
 - Multiple routines
 - More granualar control over the build process
