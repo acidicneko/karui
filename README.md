@@ -24,7 +24,10 @@ git clone https://github.com/acidicneko/karui.git
 ```
 
 Run the provided `configure.sh` to compile karui. The resultant binary is placed in `build/` folder, which can
-be used to compile karui itself with given `scbuild.json` file in project root.
+be used to compile karui itself with given `scbuild.json` file in project root with the following command
+```
+karui -b
+```
 
 
 ## Future plans
