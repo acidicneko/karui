@@ -1,7 +1,9 @@
-# Simple C Build (scbuild) Tool
+# Karui: A Simple C Build Tool
+### Formerly known as scbuild
+
 There are tools like CMake, Ninja, make etc. but they are not as simple, but complex in nature for a relatively simpler project.
 
-scbuild aims to be easy to use and fast. Note that it is not a replacement for CMake or Ninja, but just a simple build tool for small projects.
+karui aims to be easy to use and fast. Note that it is not a replacement for CMake or Ninja, but just a simple build tool for small projects.
 It supports both C and C++.
 
 
