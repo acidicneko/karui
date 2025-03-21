@@ -1,4 +1,4 @@
-#include <cJSON.h>
+#include <cJSON/cJSON.h>
 #include <cstddef>
 #include <fstream>
 #include <scbuild.hpp>
@@ -30,5 +30,10 @@ void scbuild::builder::ParserConfig(std::string ConfigFileLocation) {
   cJSON *flag = NULL;
   cJSON_ArrayForEach(flag, flags) {
     this->compilerOptions.push_back(flag->valuestring);
+  }
+  cJSON *ldflags = cJSON_GetObjectItem(json, "ldflags");
+  cJSON *ldflag = NULL;
+  cJSON_ArrayForEach(ldflag, ldflags) {
+    this->linkerOptions.push_back(ldflag->valuestring);
   }
 }

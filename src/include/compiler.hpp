@@ -9,6 +9,7 @@ class Compiler {
 public:
   std::string CompilerName = "none";
   std::vector<std::string> CompilerOptions;
+  std::vector<std::string> LinkerOptions;
   std::string Target;
   std::string BuildFolder;
 

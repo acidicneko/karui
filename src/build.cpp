@@ -39,6 +39,7 @@ int build::Build(scbuild::builder *Builder) {
 
   Compiler->CompilerName = Builder->compiler;
   Compiler->CompilerOptions = Builder->compilerOptions;
+  Compiler->LinkerOptions = Builder->linkerOptions;
   Compiler->BuildFolder = Builder->buildFolder;
   Compiler->Target = Builder->target;
 

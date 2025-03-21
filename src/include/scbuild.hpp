@@ -12,6 +12,7 @@ public:
   std::string target;
   std::string buildFolder;
   std::vector<std::string> compilerOptions;
+  std::vector<std::string> linkerOptions;
   void ParserConfig(std::string ConfigFileLocation);
 };
 } // namespace scbuild
