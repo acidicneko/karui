@@ -17,13 +17,9 @@ unsigned long getEpochModifiedTime(std::string Filename) {
   return (unsigned long)CurrentModified;
 }
 
-bool dependency::CheckModified(std::string Filename) {
-  std::string SrcFileLocation = Filename;
-  Filename.replace(0, 3, "build");
-  Filename.replace(Filename.find(".", 0, 1) + 1, 3, "o");
-  std::string ObjFileLocation = Filename;
-  unsigned long SrcModified = getEpochModifiedTime(SrcFileLocation);
-  unsigned long ObjModified = getEpochModifiedTime(ObjFileLocation);
+bool dependency::CheckModified(std::string srcFilename, std::string objFilename) {
+  unsigned long SrcModified = getEpochModifiedTime(srcFilename);
+  unsigned long ObjModified = getEpochModifiedTime(objFilename);
   if (SrcModified > ObjModified) {
     return true;
   }

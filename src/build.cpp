@@ -42,7 +42,7 @@ int build::Build(karui::builder *Builder) {
   Compiler->BuildFolder = Builder->buildFolder;
   Compiler->Target = Builder->target;
 
-  std::vector<std::string> SourceFiles = CollectSourceFiles("src", 1);
+  std::vector<std::string> SourceFiles = CollectSourceFiles(Builder->srcFolder, 1);
   std::vector<std::string> ObjectFiles;
   bool CompiledSuccessfully = true;
 
@@ -65,21 +65,20 @@ int build::Build(karui::builder *Builder) {
         SourceFilesQueue.pop();
       }
       
-      if (dependency::CheckModified(file)) {
+      std::string objFile = file;
+      objFile.replace(0, 3, Builder->buildFolder);
+      size_t dotPos = objFile.find_last_of(".");
+      if (dotPos != std::string::npos) {
+        objFile.replace(dotPos + 1, std::string::npos, "o");
+      } 
+      
+      if (dependency::CheckModified(file, objFile)) {
         if (Compiler->Compile(file) != 0) {
           CompiledSuccessfully = false;
           std::cout << "\033[1;31mERROR\033[0m: Failed to compile: " << file
                     << std::endl;
           continue;
         }
-      }
-      
-      std::string objFile = file;
-      objFile.replace(0, 3, "build");
-      
-      size_t dotPos = objFile.find_last_of(".");
-      if (dotPos != std::string::npos) {
-        objFile.replace(dotPos + 1, std::string::npos, "o");
       }
       
       {
