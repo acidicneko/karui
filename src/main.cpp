@@ -1,28 +1,30 @@
 #include "meta.hpp"
+#include "utils.hpp"
 #include <build.hpp>
+#include <cstdlib>
 #include <getopt.h>
 #include <iostream>
 
 int main(int argc, char **argv) {
-  karui::builder *Builder = new class karui::builder();
-  Builder->ParserConfig(DEFAULT_CONFIG_FILE);
-  option longopts[] = {{"build", no_argument, NULL, 'b'},
-                       {"clean", no_argument, NULL, 'c'},
+  std::string currentConfigFile = DEFAULT_CONFIG_FILE;
+  option longopts[] = {{"config", required_argument, NULL, 'c'},
                        {"help", no_argument, NULL, 'h'},
                        {"version", no_argument, NULL, 'v'},
                        {0}};
   while (1) {
-    const int opt = getopt_long(argc, argv, "bvc", longopts, 0);
+    const int opt = getopt_long(argc, argv, "vc:", longopts, 0);
 
     if (opt == -1) {
       break;
     }
 
     switch (opt) {
-    case 'b':
-      build::Build(Builder);
-      break;
     case 'c':
+      currentConfigFile = optarg;
+      if(!utils::FileExists(currentConfigFile)){
+        std::cout << "No such configuration file exists: " << currentConfigFile << std::endl;
+        exit(EXIT_FAILURE);
+      }
       break;
     case 'v':
       std::cout << "Karui " << VERSION << "; A Simple C Build tool.\n"
@@ -30,9 +32,11 @@ int main(int argc, char **argv) {
                 << std::endl;
       break;
     default:
-      std::cout << "I'm bored." << std::endl;
       break;
     }
   }
+  karui::builder *Builder = new class karui::builder();
+  Builder->ParserConfig(currentConfigFile);
+  build::Build(Builder);
   return 0;
 }

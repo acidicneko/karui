@@ -9,5 +9,6 @@
   "ldflags": [
     "-lcjson"
   ],
-  "buildDir": "build"
+  "buildDir": "build",
+  "srcDir": "src"
 }

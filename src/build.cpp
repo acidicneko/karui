@@ -66,7 +66,7 @@ int build::Build(karui::builder *Builder) {
       }
       
       std::string objFile = file;
-      objFile.replace(0, 3, Builder->buildFolder);
+      objFile.replace(0, Builder->srcFolder.length(), Builder->buildFolder);
       size_t dotPos = objFile.find_last_of(".");
       if (dotPos != std::string::npos) {
         objFile.replace(dotPos + 1, std::string::npos, "o");
