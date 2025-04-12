@@ -20,14 +20,14 @@ int compiler::Compiler::Compile(std::string SourceFile) {
 }
 
 int compiler::Compiler::Link(std::vector<std::string> ObjectFiles) {
-  std::string Options;
+  std::string Options = "";
   for (auto option = this->LinkerOptions.begin();
        option != this->LinkerOptions.end(); option++) {
     Options += option->data();
     Options += " ";
   }
-  Options.pop_back();
-  std::string Objects;
+  if(Options != "") Options.pop_back();
+  std::string Objects = "";
   for (auto object = ObjectFiles.begin(); object != ObjectFiles.end();
        object++) {
     Objects += object->data();
