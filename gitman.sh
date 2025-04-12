@@ -2,11 +2,11 @@
 install() {
   ./configure.sh
   strip --strip-debug build/karui
-  mv build/karui "$GITMAN_ROOT"/bin/karui
+  mv build/karui "$GITMAN_BIN"/karui
 }
 
 uninstall() {
-  rm "$GITMAN_ROOT"/bin/karui
+  rm "$GITMAN_BIN"/karui
 }
 
 update(){
