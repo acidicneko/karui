@@ -7,12 +7,13 @@
 #include <utils.hpp>
 
 unsigned long getEpochModifiedTime(std::string Filename) {
-  struct stat *FileStat = (struct stat *)malloc(sizeof(struct stat));
+  //struct stat *FileStat = (struct stat *)malloc(sizeof(struct stat));
+  struct stat* FileStat = new struct stat;
   if (stat(Filename.c_str(), FileStat) != 0) {
     return 0;
   }
   time_t CurrentModified = FileStat->st_mtime;
-  free(FileStat);
+  delete FileStat; 
   return (unsigned long)CurrentModified;
 }
 

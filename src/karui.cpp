@@ -1,9 +1,9 @@
 #include <cJSON/cJSON.h>
 #include <cstddef>
 #include <fstream>
-#include <scbuild.hpp>
+#include <karui.hpp>
 
-void scbuild::builder::ParserConfig(std::string ConfigFileLocation) {
+void karui::builder::ParserConfig(std::string ConfigFileLocation) {
   std::ifstream jsonFile(ConfigFileLocation);
   std::string jsonString((std::istreambuf_iterator<char>(jsonFile)),
                          std::istreambuf_iterator<char>());
@@ -11,12 +11,16 @@ void scbuild::builder::ParserConfig(std::string ConfigFileLocation) {
   cJSON *threads = cJSON_GetObjectItem(json, "threads");
   if (threads != NULL) {
     this->threads = threads->valueint;
-    ;
   }
   cJSON *buildFolder = cJSON_GetObjectItem(json, "buildDir");
   if (buildFolder != NULL) {
     this->buildFolder = buildFolder->valuestring;
   }
+  cJSON *srcFolder = cJSON_GetObjectItem(json, "srcDir");
+  if (srcFolder != NULL) {
+    this->srcFolder = srcFolder->valuestring;
+  }
+
   cJSON *compiler = cJSON_GetObjectItem(json, "cc");
   if (compiler != NULL) {
     this->compiler = compiler->valuestring;

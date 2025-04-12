@@ -1,6 +1,6 @@
 #pragma once
 
-#include <scbuild.hpp>
+#include <karui.hpp>
 #include <string>
 #include <vector>
 
@@ -8,5 +8,5 @@ namespace build {
 
 std::vector<std::string> CollectSourceFiles(std::string ParentDirectory,
                                             int Level);
-int Build(scbuild::builder *Builder);
+int Build(karui::builder *Builder);
 } // namespace build

@@ -6,7 +6,6 @@
 #include <meta.hpp>
 #include <mutex>
 #include <queue>
-#include <scbuild.hpp>
 #include <string>
 #include <thread>
 #include <utils.hpp>
@@ -34,7 +33,7 @@ std::vector<std::string> build::CollectSourceFiles(std::string ParentDirectory,
   return SourceFiles;
 }
 
-int build::Build(scbuild::builder *Builder) {
+int build::Build(karui::builder *Builder) {
   compiler::Compiler *Compiler = new class compiler::Compiler();
 
   Compiler->CompilerName = Builder->compiler;
@@ -49,6 +48,7 @@ int build::Build(scbuild::builder *Builder) {
 
   std::queue<std::string> SourceFilesQueue;
   std::mutex SourceFilesQueueMutex;
+  std::mutex ObjectFilesMutex;
   for (const auto &file : SourceFiles) {
     SourceFilesQueue.push(file);
   }
@@ -64,6 +64,7 @@ int build::Build(scbuild::builder *Builder) {
         file = SourceFilesQueue.front();
         SourceFilesQueue.pop();
       }
+      
       if (dependency::CheckModified(file)) {
         if (Compiler->Compile(file) != 0) {
           CompiledSuccessfully = false;
@@ -72,10 +73,19 @@ int build::Build(scbuild::builder *Builder) {
           continue;
         }
       }
-      std::string ObjFileLocation = file.replace(0, 3, "build");
-
-      ObjectFiles.push_back(
-          file.replace(ObjFileLocation.find(".", 0, 1) + 1, 3, "o"));
+      
+      std::string objFile = file;
+      objFile.replace(0, 3, "build");
+      
+      size_t dotPos = objFile.find_last_of(".");
+      if (dotPos != std::string::npos) {
+        objFile.replace(dotPos + 1, std::string::npos, "o");
+      }
+      
+      {
+        std::lock_guard<std::mutex> lock(ObjectFilesMutex); 
+        ObjectFiles.push_back(objFile);
+      }
     }
   };
 

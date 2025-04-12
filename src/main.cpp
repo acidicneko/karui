@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  scbuild::builder *Builder = new class scbuild::builder();
+  karui::builder *Builder = new class karui::builder();
   Builder->ParserConfig(DEFAULT_CONFIG_FILE);
   option longopts[] = {{"build", no_argument, NULL, 'b'},
                        {"clean", no_argument, NULL, 'c'},
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     case 'c':
       break;
     case 'v':
-      std::cout << "SCBuild v1.0.0; A Simple C Build tool.\n"
+      std::cout << "Karui v1.0.0; A Simple C Build tool.\n"
                 << "Copyright acidicneko 2024 https://github.com/acidicneko"
                 << std::endl;
       break;

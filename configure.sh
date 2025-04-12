@@ -15,7 +15,7 @@ fi
 
 for i in `ls -1 src/`  ; do
   if [[ "$i" != "include" ]]; then
-    g++ -Isrc/include -std=c++20 -c src/$i -o build/${i%.cpp}.o
+    g++ -g -Isrc/include -std=c++20 -c src/$i -o build/${i%.cpp}.o
   fi
 done
 
@@ -27,5 +27,5 @@ for i in `ls -1 build/` ; do
   fi
 done
 
-g++ $OBJS -o build/karui -lcjson
+g++ -g $OBJS -o build/karui -lcjson
 rm $OBJS

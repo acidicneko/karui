@@ -2,7 +2,7 @@
 
 #define VERSION "1.0.0"
 #define DEFAULT_THREAD_COUNT 4
-#define DEFAULT_CONFIG_FILE "scbuild.json"
+#define DEFAULT_CONFIG_FILE "karui.json"
 
 #include <stddef.h>
 #include <thread>
