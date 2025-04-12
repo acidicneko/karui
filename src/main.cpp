@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
       std::cout << "Karui " << VERSION << "; A Simple C Build tool.\n"
                 << "Copyright acidicneko 2024 https://github.com/acidicneko"
                 << std::endl;
+      exit(EXIT_SUCCESS);
       break;
     default:
       break;
