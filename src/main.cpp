@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     case 'c':
       break;
     case 'v':
-      std::cout << "Karui v1.0.0; A Simple C Build tool.\n"
+      std::cout << "Karui " << VERSION << "; A Simple C Build tool.\n"
                 << "Copyright acidicneko 2024 https://github.com/acidicneko"
                 << std::endl;
       break;
