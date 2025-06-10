@@ -88,7 +88,7 @@ int build::Build(karui::builder *Builder) {
   };
 
   std::vector<std::thread> threads;
-  for (int i = 0; i < GetThreads(); i++) {
+  for (int i = 0; i < Builder->threads; i++) {
     threads.emplace_back(std::thread(worker));
   }
 

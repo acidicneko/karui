@@ -1,0 +1,12 @@
+cc: g++
+target: karui
+threads: 12
+flags:
+  - -g
+  - -Isrc/include
+  - -std=c++17
+ldflags:
+  - -g
+  - -lyaml
+buildDir: build
+srcDir: src

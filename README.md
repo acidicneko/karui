@@ -15,6 +15,21 @@ It supports both C and C++.
 - fast
 - Recompile only on changes
 
+## Dependencies
+- libyaml
+Install it using your package manager, for example on Ubuntu/Debian:
+```
+sudo apt install libyaml-dev
+```
+On Arch Linux:
+```
+sudo pacman -S libyaml
+```
+On Fedora:
+```
+sudo dnf install libyaml-devel
+```
+
 ## Install instructions
 Clone the repository
 
@@ -23,7 +38,7 @@ git clone https://github.com/acidicneko/karui.git
 ```
 
 Run the provided `configure.sh` with root priveleges, to compile karui. The resultant binary is placed in `build/` folder, which can
-be used to compile karui itself with given `karui.json` file in project root with the following command
+be used to compile karui itself with given `karui.yaml` file in project root with the following command
 ```
 karui
 ```
