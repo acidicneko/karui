@@ -20,9 +20,10 @@ std::vector<std::string> build::CollectSourceFiles(std::string ParentDirectory,
         continue;
       std::string FullFilePath = ParentDirectory + "/" + f->d_name;
       if (f->d_type == DT_DIR) {
-        build::CollectSourceFiles(FullFilePath, 1);
+        auto SubFiles = build::CollectSourceFiles(FullFilePath, 1);
+        SourceFiles.insert(SourceFiles.end(), SubFiles.begin(), SubFiles.end());
       } else {
-        if (utils::GetExtensionTypeAndFilename(FullFilePath)[1] == "c" |
+        if (utils::GetExtensionTypeAndFilename(FullFilePath)[1] == "c" ||
             utils::GetExtensionTypeAndFilename(FullFilePath)[1] == "cpp") {
           SourceFiles.push_back(FullFilePath);
         }
@@ -42,7 +43,8 @@ int build::Build(karui::builder *Builder) {
   Compiler->BuildFolder = Builder->buildFolder;
   Compiler->Target = Builder->target;
 
-  std::vector<std::string> SourceFiles = CollectSourceFiles(Builder->srcFolder, 1);
+  std::vector<std::string> SourceFiles =
+      CollectSourceFiles(Builder->srcFolder, 1);
   std::vector<std::string> ObjectFiles;
   bool CompiledSuccessfully = true;
 
@@ -64,14 +66,11 @@ int build::Build(karui::builder *Builder) {
         file = SourceFilesQueue.front();
         SourceFilesQueue.pop();
       }
-      
+
       std::string objFile = file;
-      objFile.replace(0, Builder->srcFolder.length(), Builder->buildFolder);
-      size_t dotPos = objFile.find_last_of(".");
-      if (dotPos != std::string::npos) {
-        objFile.replace(dotPos + 1, std::string::npos, "o");
-      } 
-      
+      objFile = Compiler->BuildFolder + "/" +
+                utils::GetFilenameWithoutExtension(file) + ".o";
+
       if (dependency::CheckModified(file, objFile)) {
         if (Compiler->Compile(file) != 0) {
           CompiledSuccessfully = false;
@@ -80,9 +79,9 @@ int build::Build(karui::builder *Builder) {
           continue;
         }
       }
-      
+
       {
-        std::lock_guard<std::mutex> lock(ObjectFilesMutex); 
+        std::lock_guard<std::mutex> lock(ObjectFilesMutex);
         ObjectFiles.push_back(objFile);
       }
     }

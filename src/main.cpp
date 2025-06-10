@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
                        {"version", no_argument, NULL, 'v'},
                        {0}};
   while (1) {
-    const int opt = getopt_long(argc, argv, "vc:", longopts, 0);
+    const int opt = getopt_long(argc, argv, "vc:h", longopts, 0);
 
     if (opt == -1) {
       break;
@@ -21,8 +21,9 @@ int main(int argc, char **argv) {
     switch (opt) {
     case 'c':
       currentConfigFile = optarg;
-      if(!utils::FileExists(currentConfigFile)){
-        std::cout << "No such configuration file exists: " << currentConfigFile << std::endl;
+      if (!utils::FileExists(currentConfigFile)) {
+        std::cout << "No such configuration file exists: " << currentConfigFile
+                  << std::endl;
         exit(EXIT_FAILURE);
       }
       break;
@@ -32,7 +33,17 @@ int main(int argc, char **argv) {
                 << std::endl;
       exit(EXIT_SUCCESS);
       break;
+    case 'h':
+      std::cout
+          << "Usage: karui [options]\n"
+          << "Options:\n"
+          << "  -c, --config <file>   Specify the configuration file to use.\n"
+          << "  -v, --version          Show version information.\n"
+          << "  -h, --help             Show this help message." << std::endl;
+      exit(EXIT_SUCCESS);
+      break;
     default:
+      exit(EXIT_FAILURE);
       break;
     }
   }
