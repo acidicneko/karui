@@ -43,9 +43,39 @@ be used to compile karui itself with given `karui.yaml` file in project root wit
 karui
 ```
 
+## Usage
+To compile a project, create a `karui.yaml` file in the root of your project. Here is an example:
+
+```yaml
+cc: gcc
+flags: 
+    - -Wall
+    - -Wextra
+    - -Werror
+    - -O2
+threads: 4      # Number of threads to use for parallel compilation
+
+ldflags:
+    - -lm       # Link with the math library
+
+verbose: true   # Set to true to enable verbose output
+
+buildDir: build  # Directory where the final binary will be placed
+srcDir: src      # Directory where the source files are located
+
+extraObjs:      # Extra object files to link with which are not compiled by karui
+    - src/main.o
+
+hooks:
+    - name: pull
+      command: git pull
+
+workflow:
+    - pull
+    - build     # hook provided by karui (compiles the source files)
+    - link      # hook provided by karui (links the final binary)
+
+```
 
 ## Future plans
-- Configuring the tool via a config file
 - File exclusions
-- Multiple routines
-- More granualar control over the build process
