@@ -1,3 +1,4 @@
+#include "karui.hpp"
 #include "meta.hpp"
 #include "utils.hpp"
 #include <build.hpp>
@@ -49,6 +50,6 @@ int main(int argc, char **argv) {
   }
   karui::builder *Builder = new class karui::builder();
   Builder->ParserConfig(currentConfigFile);
-  build::Build(Builder);
+  karui::RunWorkflow(*Builder);
   return 0;
 }

@@ -1,6 +1,7 @@
 cc: g++
 target: karui
 threads: 12
+verbose: true
 flags:
   - -g
   - -Isrc/include
@@ -10,3 +11,7 @@ ldflags:
   - -lyaml
 buildDir: build
 srcDir: src
+
+workflow:
+  - build
+  - link

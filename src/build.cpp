@@ -34,18 +34,19 @@ std::vector<std::string> build::CollectSourceFiles(std::string ParentDirectory,
   return SourceFiles;
 }
 
-int build::Build(karui::builder *Builder) {
+int build::Build(karui::builder &Builder,
+                 std::vector<std::string> &ObjectFiles) {
   compiler::Compiler *Compiler = new class compiler::Compiler();
 
-  Compiler->CompilerName = Builder->compiler;
-  Compiler->CompilerOptions = Builder->compilerOptions;
-  Compiler->LinkerOptions = Builder->linkerOptions;
-  Compiler->BuildFolder = Builder->buildFolder;
-  Compiler->Target = Builder->target;
+  Compiler->CompilerName = Builder.compiler;
+  Compiler->CompilerOptions = Builder.compilerOptions;
+  Compiler->LinkerOptions = Builder.linkerOptions;
+  Compiler->BuildFolder = Builder.buildFolder;
+  Compiler->Target = Builder.target;
+  Compiler->Verbose = Builder.verbose;
 
   std::vector<std::string> SourceFiles =
-      CollectSourceFiles(Builder->srcFolder, 1);
-  std::vector<std::string> ObjectFiles;
+      CollectSourceFiles(Builder.srcFolder, 1);
   bool CompiledSuccessfully = true;
 
   std::queue<std::string> SourceFilesQueue;
@@ -88,7 +89,7 @@ int build::Build(karui::builder *Builder) {
   };
 
   std::vector<std::thread> threads;
-  for (int i = 0; i < Builder->threads; i++) {
+  for (int i = 0; i < Builder.threads; i++) {
     threads.emplace_back(std::thread(worker));
   }
 
@@ -98,13 +99,14 @@ int build::Build(karui::builder *Builder) {
     }
   }
 
-  if (CompiledSuccessfully) {
-    Compiler->Link(ObjectFiles);
-  } else {
-    std::cout
-        << "\033[1;31mERROR\033[0m: Failed to link object files due to missing "
-           "object files.\n";
-  }
+  // if (CompiledSuccessfully) {
+  //   Compiler->Link(ObjectFiles);
+  // } else {
+  //   std::cout
+  //       << "\033[1;31mERROR\033[0m: Failed to link object files due to
+  //       missing "
+  //          "object files.\n";
+  // }
   delete Compiler;
   return 0;
 }

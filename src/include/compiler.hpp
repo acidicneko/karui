@@ -12,6 +12,7 @@ public:
   std::vector<std::string> LinkerOptions;
   std::string Target;
   std::string BuildFolder;
+  bool Verbose = false;
 
   int Compile(std::string SourceFile);
   int Link(std::vector<std::string> ObjectFiles);

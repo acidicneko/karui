@@ -15,7 +15,9 @@ int compiler::Compiler::Compile(std::string SourceFile) {
                              SourceFile + " -o " + this->BuildFolder + "/" +
                              utils::GetFilenameWithoutExtension(SourceFile) +
                              ".o";
-  std::cout << FinalCommand << std::endl;
+  if (this->Verbose) {
+    std::cout << FinalCommand << std::endl;
+  }
   return utils::ExecuteCommand(FinalCommand);
 }
 
@@ -26,7 +28,8 @@ int compiler::Compiler::Link(std::vector<std::string> ObjectFiles) {
     Options += option->data();
     Options += " ";
   }
-  if(Options != "") Options.pop_back();
+  if (Options != "")
+    Options.pop_back();
   std::string Objects = "";
   for (auto object = ObjectFiles.begin(); object != ObjectFiles.end();
        object++) {
@@ -37,6 +40,8 @@ int compiler::Compiler::Link(std::vector<std::string> ObjectFiles) {
   std::string FinalCommand = this->CompilerName + " " + Objects + " -o " +
                              this->BuildFolder + "/" + this->Target + " " +
                              Options;
-  std::cout << FinalCommand << std::endl;
+  if (this->Verbose) {
+    std::cout << FinalCommand << std::endl;
+  }
   return utils::ExecuteCommand(FinalCommand);
 }

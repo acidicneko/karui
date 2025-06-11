@@ -1,8 +1,11 @@
+#include <build.hpp>
+#include <compiler.hpp>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <karui.hpp>
 #include <string>
+#include <utils.hpp>
 #include <vector>
 #include <yaml.h>
 
@@ -130,6 +133,151 @@ void karui::builder::ParserConfig(std::string ConfigFileLocation) {
     }
   }
 
+  yaml_node_t *hooks_node = findKey("hooks");
+  if (hooks_node && hooks_node->type == YAML_SEQUENCE_NODE) {
+    for (yaml_node_item_t *item = hooks_node->data.sequence.items.start;
+         item < hooks_node->data.sequence.items.top; item++) {
+      yaml_node_t *hook_node = yaml_document_get_node(&document, *item);
+      if (!hook_node || hook_node->type != YAML_MAPPING_NODE)
+        continue;
+
+      karui::hook new_hook;
+
+      for (yaml_node_pair_t *pair = hook_node->data.mapping.pairs.start;
+           pair < hook_node->data.mapping.pairs.top; pair++) {
+        yaml_node_t *key_node = yaml_document_get_node(&document, pair->key);
+        yaml_node_t *value_node =
+            yaml_document_get_node(&document, pair->value);
+
+        if (!key_node || key_node->type != YAML_SCALAR_NODE)
+          continue;
+        std::string keyStr((char *)key_node->data.scalar.value);
+
+        if (keyStr == "name" && value_node &&
+            value_node->type == YAML_SCALAR_NODE) {
+          new_hook.name = std::string((char *)value_node->data.scalar.value);
+        } else if (keyStr == "commands" && value_node &&
+                   value_node->type == YAML_SEQUENCE_NODE) {
+          for (yaml_node_item_t *cmd_item =
+                   value_node->data.sequence.items.start;
+               cmd_item < value_node->data.sequence.items.top; cmd_item++) {
+            yaml_node_t *cmd_node =
+                yaml_document_get_node(&document, *cmd_item);
+            if (cmd_node && cmd_node->type == YAML_SCALAR_NODE) {
+              new_hook.commands.push_back(
+                  std::string((char *)cmd_node->data.scalar.value));
+            }
+          }
+        }
+      }
+
+      if (!new_hook.name.empty()) {
+        this->hooks.push_back(new_hook);
+      }
+    }
+  }
+
+  yaml_node_t *workflow_node = findKey("workflow");
+  if (workflow_node && workflow_node->type == YAML_SEQUENCE_NODE) {
+    for (yaml_node_item_t *item = workflow_node->data.sequence.items.start;
+         item < workflow_node->data.sequence.items.top; item++) {
+      yaml_node_t *workflow_item = yaml_document_get_node(&document, *item);
+      if (workflow_item && workflow_item->type == YAML_SCALAR_NODE) {
+        this->workflow.push_back(
+            std::string((char *)workflow_item->data.scalar.value));
+      }
+    }
+  }
+
+  yaml_node_t *include_node = findKey("extraObjs");
+  if (include_node && include_node->type == YAML_SEQUENCE_NODE) {
+    for (yaml_node_item_t *item = include_node->data.sequence.items.start;
+         item < include_node->data.sequence.items.top; item++) {
+
+      yaml_node_t *include_item = yaml_document_get_node(&document, *item);
+      if (!include_item) {
+        std::cerr << "YAML error: null item in sequence." << std::endl;
+        continue;
+      }
+
+      if (include_item->type != YAML_SCALAR_NODE) {
+        std::cerr << "YAML error: non-scalar item in sequence." << std::endl;
+        continue;
+      }
+
+      if (!include_item->data.scalar.value) {
+        std::cerr << "YAML error: scalar value is null." << std::endl;
+        continue;
+      }
+
+      this->extraObjs.push_back(
+          std::string((char *)include_item->data.scalar.value));
+    }
+  }
+
+  yaml_node_t *verbose_node = findKey("verbose");
+  if (verbose_node && verbose_node->type == YAML_SCALAR_NODE) {
+    std::string verboseStr((char *)verbose_node->data.scalar.value);
+    this->verbose = (verboseStr == "true" || verboseStr == "1");
+  } else {
+    this->verbose = false; // Default to false if not specified
+  }
   yaml_document_delete(&document);
   yaml_parser_delete(&parser);
+}
+
+karui::hook *GetHook(karui::builder &Builder, std::string HookName) {
+  for (auto &hook : Builder.hooks) {
+    if (hook.name == HookName) {
+      return &hook;
+    }
+  }
+  return nullptr;
+}
+
+void karui::RunWorkflow(karui::builder &Builder) {
+  std::vector<std::string> ObjectFiles;
+  if (Builder.workflow.empty()) {
+    std::cout << "\033[1;31mERROR\033[0m: No workflow defined in configuration."
+              << std::endl;
+    return;
+  }
+  for (const auto &hookName : Builder.workflow) {
+    std::cout << "\033[1;34mRunning hook: " << hookName << "\033[0m"
+              << std::endl;
+    if (hookName == "build") {
+      build::Build(Builder, ObjectFiles);
+    } else if (hookName == "link") {
+      if (!Builder.extraObjs.empty()) {
+        for (const auto &extraObj : Builder.extraObjs) {
+          ObjectFiles.push_back(extraObj);
+        }
+      }
+      compiler::Compiler *Compiler = new class compiler::Compiler();
+      Compiler->CompilerName = Builder.compiler;
+      Compiler->CompilerOptions = Builder.compilerOptions;
+      Compiler->LinkerOptions = Builder.linkerOptions;
+      Compiler->BuildFolder = Builder.buildFolder;
+      Compiler->Target = Builder.target;
+      Compiler->Verbose = Builder.verbose;
+      Compiler->Link(ObjectFiles);
+    } else {
+      karui::hook *hook = GetHook(Builder, hookName);
+      if (!hook) {
+        std::cout << "\033[1;31mERROR\033[0m: Hook '" << hookName
+                  << "' not found in configuration." << std::endl;
+        continue;
+      }
+      for (const auto &command : hook->commands) {
+        if (Builder.verbose) {
+          std::cout << "\033[1;33mExecuting command: " << command << "\033[0m"
+                    << std::endl;
+        }
+        int status = utils::ExecuteCommand(command);
+        if (status != 0) {
+          std::cout << "Command failed with status: " << status << std::endl;
+        }
+      }
+    }
+  }
 }
