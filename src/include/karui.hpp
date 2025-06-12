@@ -28,6 +28,7 @@ public:
   void ParserConfig(std::string ConfigFileLocation);
 };
 
-void RunWorkflow(karui::builder &Builder);
+void RunHook(karui::builder &Builder, const std::string &HookName);
+void RunWorkflow(karui::builder &Builder, const std::string &HookName);
 
 } // namespace karui

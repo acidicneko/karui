@@ -8,12 +8,15 @@
 
 int main(int argc, char **argv) {
   std::string currentConfigFile = DEFAULT_CONFIG_FILE;
+
+  std::string manualHookName = "none";
   option longopts[] = {{"config", required_argument, NULL, 'c'},
                        {"help", no_argument, NULL, 'h'},
                        {"version", no_argument, NULL, 'v'},
+                       {"run", required_argument, NULL, 'r'},
                        {0}};
   while (1) {
-    const int opt = getopt_long(argc, argv, "vc:h", longopts, 0);
+    const int opt = getopt_long(argc, argv, "vc:hr:", longopts, 0);
 
     if (opt == -1) {
       break;
@@ -38,10 +41,14 @@ int main(int argc, char **argv) {
       std::cout
           << "Usage: karui [options]\n"
           << "Options:\n"
-          << "  -c, --config <file>   Specify the configuration file to use.\n"
+          << "  -c, --config <file>    Specify the configuration file to use.\n"
           << "  -v, --version          Show version information.\n"
+          << "  -r, --run <hook>       Run a specific hook by name.\n"
           << "  -h, --help             Show this help message." << std::endl;
       exit(EXIT_SUCCESS);
+      break;
+    case 'r':
+      manualHookName = optarg;
       break;
     default:
       exit(EXIT_FAILURE);
@@ -50,6 +57,7 @@ int main(int argc, char **argv) {
   }
   karui::builder *Builder = new class karui::builder();
   Builder->ParserConfig(currentConfigFile);
-  karui::RunWorkflow(*Builder);
+  karui::RunWorkflow(*Builder, manualHookName);
+  delete Builder;
   return 0;
 }
