@@ -36,14 +36,6 @@ std::vector<std::string> build::CollectSourceFiles(std::string ParentDirectory,
 
 int build::Build(karui::builder &Builder,
                  std::vector<std::string> &ObjectFiles) {
-  compiler::Compiler *Compiler = new class compiler::Compiler();
-
-  Compiler->CompilerName = Builder.compiler;
-  Compiler->CompilerOptions = Builder.compilerOptions;
-  Compiler->LinkerOptions = Builder.linkerOptions;
-  Compiler->BuildFolder = Builder.buildFolder;
-  Compiler->Target = Builder.target;
-  Compiler->Verbose = Builder.verbose;
 
   std::vector<std::string> SourceFiles =
       CollectSourceFiles(Builder.srcFolder, 1);
@@ -57,6 +49,13 @@ int build::Build(karui::builder &Builder,
   }
 
   auto worker = [&]() {
+    compiler::Compiler *ThreadCompiler = new class compiler::Compiler();
+    ThreadCompiler->CompilerName = Builder.compiler;
+    ThreadCompiler->CompilerOptions = Builder.compilerOptions;
+    ThreadCompiler->BuildFolder = Builder.buildFolder;
+    ThreadCompiler->Target = Builder.target;
+    ThreadCompiler->Verbose = Builder.verbose;
+
     while (true) {
       std::string file;
       {
@@ -69,11 +68,11 @@ int build::Build(karui::builder &Builder,
       }
 
       std::string objFile = file;
-      objFile = Compiler->BuildFolder + "/" +
+      objFile = ThreadCompiler->BuildFolder + "/" +
                 utils::GetFilenameWithoutExtension(file) + ".o";
 
       if (dependency::CheckModified(file, objFile)) {
-        if (Compiler->Compile(file) != 0) {
+        if (ThreadCompiler->Compile(file) != 0) {
           CompiledSuccessfully = false;
           std::cout << "\033[1;31mERROR\033[0m: Failed to compile: " << file
                     << std::endl;
@@ -86,6 +85,7 @@ int build::Build(karui::builder &Builder,
         ObjectFiles.push_back(objFile);
       }
     }
+    delete ThreadCompiler;
   };
 
   std::vector<std::thread> threads;
@@ -99,14 +99,5 @@ int build::Build(karui::builder &Builder,
     }
   }
 
-  // if (CompiledSuccessfully) {
-  //   Compiler->Link(ObjectFiles);
-  // } else {
-  //   std::cout
-  //       << "\033[1;31mERROR\033[0m: Failed to link object files due to
-  //       missing "
-  //          "object files.\n";
-  // }
-  delete Compiler;
-  return 0;
+  return CompiledSuccessfully ? 0 : 1;
 }
