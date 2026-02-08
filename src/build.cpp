@@ -1,3 +1,4 @@
+#include <atomic>
 #include <build.hpp>
 #include <compiler.hpp>
 #include <dependency.hpp>
@@ -39,11 +40,12 @@ int build::Build(karui::builder &Builder,
 
   std::vector<std::string> SourceFiles =
       CollectSourceFiles(Builder.srcFolder, 1);
-  bool CompiledSuccessfully = true;
+  std::atomic<bool> CompiledSuccessfully{true};
 
   std::queue<std::string> SourceFilesQueue;
   std::mutex SourceFilesQueueMutex;
   std::mutex ObjectFilesMutex;
+  std::mutex CoutMutex;
   for (const auto &file : SourceFiles) {
     SourceFilesQueue.push(file);
   }
@@ -73,9 +75,12 @@ int build::Build(karui::builder &Builder,
 
       if (dependency::CheckModified(file, objFile)) {
         if (ThreadCompiler->Compile(file) != 0) {
-          CompiledSuccessfully = false;
-          std::cout << "\033[1;31mERROR\033[0m: Failed to compile: " << file
-                    << std::endl;
+          CompiledSuccessfully.store(false);
+          {
+            std::lock_guard<std::mutex> lock(CoutMutex);
+            std::cout << "\033[1;31mERROR\033[0m: Failed to compile: " << file
+                      << std::endl;
+          }
           continue;
         }
       }
