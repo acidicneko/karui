@@ -50,13 +50,20 @@ int build::Build(karui::builder &Builder,
     SourceFilesQueue.push(file);
   }
 
-  auto worker = [&]() {
+  // Copy builder settings before spawning threads to avoid data races
+  const std::string compilerName = Builder.compiler;
+  const std::vector<std::string> compilerOptions = Builder.compilerOptions;
+  const std::string buildFolder = Builder.buildFolder;
+  const std::string target = Builder.target;
+  const bool verbose = Builder.verbose;
+
+  auto worker = [&, compilerName, compilerOptions, buildFolder, target, verbose]() {
     compiler::Compiler *ThreadCompiler = new class compiler::Compiler();
-    ThreadCompiler->CompilerName = Builder.compiler;
-    ThreadCompiler->CompilerOptions = Builder.compilerOptions;
-    ThreadCompiler->BuildFolder = Builder.buildFolder;
-    ThreadCompiler->Target = Builder.target;
-    ThreadCompiler->Verbose = Builder.verbose;
+    ThreadCompiler->CompilerName = compilerName;
+    ThreadCompiler->CompilerOptions = compilerOptions;
+    ThreadCompiler->BuildFolder = buildFolder;
+    ThreadCompiler->Target = target;
+    ThreadCompiler->Verbose = verbose;
 
     while (true) {
       std::string file;
