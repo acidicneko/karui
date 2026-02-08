@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION "2.2.1"
+#define VERSION "2.2.2"
 #define DEFAULT_THREAD_COUNT 4
 #define DEFAULT_CONFIG_FILE "karui.yaml"
 
