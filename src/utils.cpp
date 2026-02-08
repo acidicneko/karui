@@ -8,21 +8,24 @@
 #include <vector>
 
 int utils::ExecuteCommand(std::string command) {
-  int argumentCount = std::count(command.begin(), command.end(), ' ') + 1;
-  char *cArgs[argumentCount];
   int status;
 
-  char *temp = (char *)command.c_str();
+  // Make a mutable copy for strtok_r
+  std::vector<char> cmdBuffer(command.begin(), command.end());
+  cmdBuffer.push_back('\0');
+
   char *argv[200];
   int argc = 0;
-  argv[argc] = std::strtok(temp, " ");
+  char *saveptr;
+  argv[argc] = strtok_r(cmdBuffer.data(), " ", &saveptr);
   while (argv[argc]) {
     argc++;
-    argv[argc] = std::strtok(0, " ");
+    argv[argc] = strtok_r(nullptr, " ", &saveptr);
   }
 
   if (fork() == 0) {
     execvp(argv[0], argv);
+    _exit(127);
   } else {
     wait(&status);
   }

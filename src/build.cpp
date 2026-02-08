@@ -50,7 +50,7 @@ int build::Build(karui::builder &Builder,
     SourceFilesQueue.push(file);
   }
 
-  // Copy builder settings before spawning threads to avoid data races
+  // Copying builder settings before spawning threads to avoid data races
   const std::string compilerName = Builder.compiler;
   const std::vector<std::string> compilerOptions = Builder.compilerOptions;
   const std::string buildFolder = Builder.buildFolder;
